@@ -1,8 +1,9 @@
-import torch 
+import torch
 import torchvision
 import torch.nn as nn
 import numpy as np
 import torchvision.transforms as transforms
+import PIL
 
 
 # ================================================================== #
@@ -26,10 +27,8 @@ import torchvision.transforms as transforms
 x = torch.tensor(1., requires_grad=True)
 w = torch.tensor(2., requires_grad=True)
 b = torch.tensor(3., requires_grad=True)
-
 # Build a computational graph.
 y = w * x + b    # y = 2 * x + 3
-
 # Compute gradients.
 y.backward()
 
@@ -109,9 +108,10 @@ train_dataset = torchvision.datasets.CIFAR10(root='../../data/',
 
 # Fetch one data pair (read data from disk).
 image, label = train_dataset[0]
+print("------------start-----------------------")
 print (image.size())
 print (label)
-
+print("------------end-----------------------")
 # Data loader (this provides queues and threads in a very simple way).
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                            batch_size=64, 
@@ -121,7 +121,7 @@ train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
 data_iter = iter(train_loader)
 
 # Mini-batch images and labels.
-images, labels = data_iter.next()
+images, labels = data_iter.__next__()
 
 # Actual usage of the data loader is as below.
 for images, labels in train_loader:
@@ -137,17 +137,20 @@ for images, labels in train_loader:
 class CustomDataset(torch.utils.data.Dataset):
     def __init__(self):
         # TODO
-        # 1. Initialize file paths or a list of file names. 
+        # 1. Initialize file paths or a list of file names.
+        self.file_paths = ["../data/dog.jpg"]
         pass
     def __getitem__(self, index):
         # TODO
         # 1. Read one data from file (e.g. using numpy.fromfile, PIL.Image.open).
         # 2. Preprocess the data (e.g. torchvision.Transform).
         # 3. Return a data pair (e.g. image and label).
-        pass
+        image = PIL.Image.open(self.file_paths[index])
+        label = 0
+        return image, label
     def __len__(self):
         # You should change 0 to the total size of your dataset.
-        return 0 
+        return len(self.file_paths) 
 
 # You can then use the prebuilt data loader. 
 custom_dataset = CustomDataset()
